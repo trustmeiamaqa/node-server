@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+import { queryNewRecord } from '../../src/utils/query_db.ts';
+
 const apiURL = process.env.api_url;
 const tutorialsURL = process.env.tutorial_url;
 
@@ -26,7 +28,7 @@ test.describe.serial('should be able to CRUD record', () => {
   test('should retreive new record successfully', async ({ request }) => {
     // retrieve data to check
     const getRecordByID = await request.get(
-      `${apiURL}${tutorialsURL}/${newRecordID}`,
+      `${apiURL}${tutorialsURL}/${newRecordID}`
     );
     expect(getRecordByID.status()).toBe(200); // response 200 OK
     const resGetRecord = await getRecordByID.json();
@@ -36,12 +38,25 @@ test.describe.serial('should be able to CRUD record', () => {
         title: title,
         description: description,
         published: published,
-      }),
+      })
     );
 
     expect(resGetRecord['title']).toHaveLength(10);
     expect(resGetRecord['description']).toHaveLength(22);
-    // expect(resGetRecord['published']).toBe(true);
+  });
+
+  test('ensure new record is created on DB', async () => {
+    // expect query result
+    const expectedRecord = {
+      title: title,
+      description: description,
+      published: published,
+    };
+    // SQL query
+    const recordId = newRecordID;
+    const queryResult = await queryNewRecord(newRecordID);
+    // console.log(queryResult);
+    expect(queryResult).toEqual(expectedRecord);
   });
 
   test('should be updated successfully', async ({ request }) => {
@@ -58,7 +73,7 @@ test.describe.serial('should be able to CRUD record', () => {
           description: updatedDescription,
           published: updatedPublished,
         },
-      },
+      }
     );
     expect(updateRecordByID.status()).toBe(200);
     expect(await updateRecordByID.json()).toMatchObject({
@@ -68,7 +83,7 @@ test.describe.serial('should be able to CRUD record', () => {
 
   test('should delete new record successfully', async ({ request }) => {
     const deleteRecordByID = await request.delete(
-      `${apiURL}${tutorialsURL}/${newRecordID}`,
+      `${apiURL}${tutorialsURL}/${newRecordID}`
     );
     expect(deleteRecordByID.status()).toBe(200); // response 200 OK
     expect(await deleteRecordByID.json()).toMatchObject({
@@ -77,7 +92,7 @@ test.describe.serial('should be able to CRUD record', () => {
 
     // ensure the record is deleted
     const getDeleteRecordByID = await request.get(
-      `${apiURL}${tutorialsURL}/${newRecordID}`,
+      `${apiURL}${tutorialsURL}/${newRecordID}`
     );
     expect(getDeleteRecordByID.status()).toBe(404); // response 200 OK
     expect(await getDeleteRecordByID.json()).toMatchObject({
@@ -134,7 +149,7 @@ test.describe('Invalid cases', () => {
     const newRecordID = resNewRecord['id']; // collect newRecordID
     // retrieve data to check
     const getRecordByID = await request.get(
-      `${apiURL}${tutorialsURL}/${newRecordID}`,
+      `${apiURL}${tutorialsURL}/${newRecordID}`
     );
     expect(getRecordByID.status()).toBe(200); // response 200 OK
     const resGetRecord = await getRecordByID.json();
