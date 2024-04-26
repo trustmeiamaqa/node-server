@@ -1,0 +1,20 @@
+{
+  "name": "playwright_ts_101",
+  "version": "1.0.0",
+  "keywords": [],
+  "license": "ISC",
+  "author": "rendezvous14",
+  "description": "Project Structure and Example for API/Web Test Automation Using Playwright with TypeScript",
+  "scripts": {
+    "test": "npx playwright test",
+    "test-ui": "npx playwright test --ui",
+    "test-api": "npx playwright test tests/feature1/simple-test.spec.ts",
+    "prettier": "npx prettier --write \"tests/**/*.ts\"",
+    "report": "npx playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.42.1",
+    "@types/node": "^20.11.28",
+    "dotenv": "^16.4.5"
+  }
+}
